@@ -3,8 +3,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AddressBook {
-   static List<ContactPerson> listOfcontact= new ArrayList<ContactPerson>();
-    public static void addContacts() {
+    List<ContactPerson> listOfcontact= new ArrayList<ContactPerson>();
+    public  void addContacts() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter First Name :");
         String firstName = sc.next();
@@ -26,5 +26,8 @@ public class AddressBook {
         listOfcontact.add(contactPerson);
 
 
+    }
+    void viewContacts(){
+        System.out.println(listOfcontact);
     }
 }
