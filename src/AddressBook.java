@@ -4,10 +4,21 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AddressBook {
-    List<ContactPerson> listOfcontact = new ArrayList<ContactPerson>();
+    ArrayList<ContactPerson> listOfcontact = new ArrayList<ContactPerson>();
     Scanner inp = new Scanner(System.in);
     int numberOfEntries;
+    public String name;
 
+    public AddressBook(String name) {
+        this.name = name;
+    }
+    public ArrayList<ContactPerson> getAddressBook() {
+        return listOfcontact;
+    }
+
+    public void setAddressBook(ArrayList<ContactPerson> addressBook) {
+        this.listOfcontact = addressBook;
+    }
     public void addContacts() {
         System.out.println("Enter How many entries you want");
          numberOfEntries=inp.nextInt();
