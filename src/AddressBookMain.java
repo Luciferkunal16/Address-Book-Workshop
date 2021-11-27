@@ -24,6 +24,6 @@ public class AddressBookMain {
             else if(choice==4){
                 obj.deletePerson();
             }
-        }while(choice!=3);
+        }while(choice!=5);
     }
 }
