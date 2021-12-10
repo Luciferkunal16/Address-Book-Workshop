@@ -1,4 +1,8 @@
-
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -6,6 +10,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 public class AddressBook implements AddressBookIF {
 
@@ -41,7 +52,7 @@ public class AddressBook implements AddressBookIF {
 
 			System.out.println("\nChoose the operation you want to perform");
 			System.out.println(
-					"1.Add To Address Book\n2.Edit Existing Entry\n3.Delete Contact\n4.Display Address book\n5.Display Sorted Address Book By Custom Criteria\n6.Write To File\n7.Read Form File\n8.Exit Address book System");
+					"1.Add To Address Book\n2.Edit Existing Entry\n3.Delete Contact\n4.Display Address book\n5.Display Sorted Address Book By Custom Criteria\n6.Write To File\n7.Read Form File\n8.Write Data To CSV File\n9.Read Data From CSV File\n10.Exit Address book System");
 
 			switch (scannerObject.nextInt()) {
 			case 1:
@@ -69,6 +80,20 @@ public class AddressBook implements AddressBookIF {
 				readDataFromFile(IOService.FILE_IO);
 				break;
 			case 8:
+				try {
+                    writeDataToCSV();
+                }catch (IOException | CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
+                    e.printStackTrace();
+                }
+				break;
+			case 9:
+				try {
+                    readDataFromCSV();
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+			case 10:
 				moreChanges = false;
 				System.out.println("Exiting Address Book: "+this.getAddressBookName()+" !");
 
@@ -81,7 +106,6 @@ public class AddressBook implements AddressBookIF {
 	public void createContactPerson(Scanner scannerObject) {
 		
 		ContactPerson person = new ContactPerson();
-		Address address = new Address();
 		
 		System.out.println("Enter First Name: ");
 		String firstName = scannerObject.next();
@@ -118,10 +142,9 @@ public class AddressBook implements AddressBookIF {
 			person.setLastName(lastName);
 			person.setPhoneNumber(phoneNumber);
 			person.setEmail(email);
-			address.setCity(city);
-			address.setState(state);
-			address.setZip(zipCode);
-			person.setAddress(address);
+			person.setCity(city);
+			person.setState(state);
+			person.setZip(zipCode);
 			addPersonToCity(person);
 			addPersonToState(person);
 			
@@ -138,25 +161,25 @@ public class AddressBook implements AddressBookIF {
 	
 	@Override	
 	public void addPersonToCity(ContactPerson contact) {
-		if (personByCity.containsKey(contact.getAddress().getCity())) {
-			personByCity.get(contact.getAddress().getCity()).add(contact);
+		if (personByCity.containsKey(contact.getCity())) {
+			personByCity.get(contact.getCity()).add(contact);
 		}
 		else {
 			ArrayList<ContactPerson> cityList = new ArrayList<ContactPerson>();
 			cityList.add(contact);
-			personByCity.put(contact.getAddress().getCity(), cityList);
+			personByCity.put(contact.getCity(), cityList);
 		}
 	}
 	
 	@Override
 	public void addPersonToState(ContactPerson contact) {
-		if (personByState.containsKey(contact.getAddress().getState())) {			
-			personByState.get(contact.getAddress().getState()).add(contact);
+		if (personByState.containsKey(contact.getState())) {			
+			personByState.get(contact.getState()).add(contact);
 		}
 		else {
 			ArrayList<ContactPerson> stateList = new ArrayList<ContactPerson>();
 			stateList.add(contact);
-			personByState.put(contact.getAddress().getState(), stateList);
+			personByState.put(contact.getState(), stateList);
 		}
 	}
 	
@@ -171,7 +194,6 @@ public class AddressBook implements AddressBookIF {
 		if(contactList.containsKey(firstName)) {
 			person = contactList.get(firstName);
 			
-			Address address = person.getAddress();
 			System.out.println("\nChoose the attribute you want to change:");
 			System.out.println("1.Last Name\n2.Phone Number\n3.Email\n4.City\n5.State\n6.ZipCode");
 			int choice = scannerObject.nextInt();
@@ -195,17 +217,17 @@ public class AddressBook implements AddressBookIF {
 			case 4:
 				System.out.println("Enter the correct City :");
 				String city = scannerObject.next();
-				address.setCity(city);
+				person.setCity(city);
 				break;
 			case 5:
 				System.out.println("Enter the correct State :");
 				String state = scannerObject.next();
-				address.setState(state);
+				person.setState(state);
 				break;
 			case 6:
 				System.out.println("Enter the correct ZipCode :");
 				long zip = scannerObject.nextLong();
-				address.setZip(zip);
+				person.setZip(zip);
 				break;
 			}
 		}
@@ -267,19 +289,19 @@ public class AddressBook implements AddressBookIF {
 					break;
 				
 			case 2: sortedContactList = contactList.values().stream()
-					.sorted((firstperson, secondperson) -> firstperson.getAddress().getCity().compareTo(secondperson.getAddress().getCity()))
+					.sorted((firstperson, secondperson) -> firstperson.getCity().compareTo(secondperson.getCity()))
 					.collect(Collectors.toList());
 					printSortedList(sortedContactList);
 					break;
 				
 			case 3: sortedContactList = contactList.values().stream()
-					.sorted((firstperson, secondperson) -> firstperson.getAddress().getState().compareTo(secondperson.getAddress().getState()))
+					.sorted((firstperson, secondperson) -> firstperson.getState().compareTo(secondperson.getState()))
 					.collect(Collectors.toList());
 					printSortedList(sortedContactList);
 					break;
 				
 			case 4: sortedContactList = contactList.values().stream()
-					.sorted((firstperson, secondperson) -> Long.valueOf(firstperson.getAddress().getZip()).compareTo(Long.valueOf(secondperson.getAddress().getZip())))
+					.sorted((firstperson, secondperson) -> Long.valueOf(firstperson.getZip()).compareTo(Long.valueOf(secondperson.getZip())))
 					.collect(Collectors.toList());
 					printSortedList(sortedContactList);
 					break;
@@ -330,6 +352,41 @@ public class AddressBook implements AddressBookIF {
 		return employeePayrollFromFile;
 	}
 
+	public void writeDataToCSV() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+		
+		String fileName = "./"+this.getAddressBookName()+"Contacts.csv";
+        try (Writer writer = Files.newBufferedWriter(Paths.get(fileName));) {
+        	
+            StatefulBeanToCsvBuilder<ContactPerson> builder = new StatefulBeanToCsvBuilder<>(writer);
+            StatefulBeanToCsv<ContactPerson> beanWriter = builder.build();
+            ArrayList<ContactPerson> listOfContacts= contactList.values().stream().collect(Collectors.toCollection(ArrayList::new));
+            beanWriter.write(listOfContacts);
+            writer.close();
+            System.out.println("Written To CSV Successfully !");
+        } 
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public <CsvValidationException extends Throwable> void readDataFromCSV() throws IOException, CsvValidationException {
+    	
+    	String fileName = "./"+this.getAddressBookName()+"Contacts.csv";
+        try (Reader reader = Files.newBufferedReader(Paths.get(fileName));
+             CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();){
+        	
+            String[] nextRecord;
+            while ((nextRecord = csvReader.readNext()) != null) {
+                System.out.println("First Name = " + nextRecord[2]);
+                System.out.println("Last Name = " + nextRecord[3]);
+                System.out.println("City = " + nextRecord[0]);
+                System.out.println("State = " + nextRecord[5]);
+                System.out.println("Email = " + nextRecord[1]);
+                System.out.println("Phone Number = " + nextRecord[4]);
+                System.out.println("Zip Code = " + nextRecord[6]);
+                System.out.println("\n");
+            }
+        }
+    }
 
 }
