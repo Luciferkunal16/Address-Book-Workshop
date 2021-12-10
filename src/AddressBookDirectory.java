@@ -8,7 +8,7 @@ import java.util.Scanner;
 import com.bridgelabz.addressbooksystemjdbc.AddressBook.IOService;
 
 
-public class AddressBookDirectory implements AddressBookDirectoryIF{
+public class AddressBookDirectory {
 	
 	public AddressBook addressBook;
 	List<ContactPerson> contactsList = new ArrayList<ContactPerson>();
@@ -26,7 +26,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		this.contactsList = contactList;
 	}
 	
-	@Override
+	
 	public void operationDirectory() {
 
 		boolean moreChanges = true;
@@ -80,8 +80,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 
 		} while (moreChanges);
 	}
-	
-	@Override
+
 	public void addAddressBook() {
 
 		System.out.println("Enter the name of the Address Book you want to add");
@@ -97,7 +96,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 
 	}
 	
-	@Override
+
 	public void editAddressBook() {
 
 		System.out.println("Enter the Name of the Address Book which you want to edit:");
@@ -112,8 +111,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		}
 
 	}
-	
-	@Override
+
 	public void searchByCity() {
 		
 		System.out.println("Enter the name of the City where the Person resides : ");
@@ -129,8 +127,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 			
 		}		
 	}
-	
-	@Override
+
 	public void searchByState() {
 		
 		System.out.println("Enter the name of the State where the Person resides : ");
@@ -148,7 +145,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 
 	}
 	
-	@Override
+
 	public void displayPeopleByRegion(HashMap<String, ArrayList<ContactPerson>> listToDisplay) {
 
 		System.out.println("Enter the name of the region :");
@@ -160,7 +157,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 				.forEach(person -> person.forEach(personDetails -> System.out.println(personDetails)));
 	}
 	
-	@Override
+
 	public void countPeopleByRegion(HashMap<String, ArrayList<ContactPerson>> listToDisplay) {
 
 		System.out.println("Enter the name of the region :");
@@ -175,7 +172,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		
 	}
 	
-	@Override
+	
 	public void displayDirectoryContents() {
 
 		System.out.println("----- Contents of the Address Book Directory-----");
@@ -186,7 +183,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		System.out.println("-----------------------------------------");
 	}
 	
-	@Override
+
 	public void readDataFromJson() {
 		
 		System.out.println("{");
