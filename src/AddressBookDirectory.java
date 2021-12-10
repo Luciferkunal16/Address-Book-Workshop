@@ -1,9 +1,13 @@
 
-import java.io.IOException; 
+import java.io.IOException;  
 import java.util.ArrayList; 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import com.bridgelabz.addressbooksystemjdbc.AddressBook.IOService;
+
 
 public class AddressBookDirectory implements AddressBookDirectoryIF{
 	
@@ -109,7 +113,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		for(AddressBook addressBook : addressBookDirectory.values()) {
 			ArrayList<ContactPerson> contactList = addressBook.getContact();
 			contactList.stream()
-				.filter(person -> person.getFirstName().equals(personName) && person.getCity().equals(cityName))
+				.filter(person -> person.getFirstName().equals(personName) && person.address.getCity().equals(cityName))
 				.forEach(person -> System.out.println(person));
 			
 		}		
@@ -126,7 +130,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		for(AddressBook addressBook : addressBookDirectory.values()) {
 			ArrayList<ContactPerson> contactList = ((AddressBook) addressBook).getContact();
 			contactList.stream()
-				.filter(person -> person.getFirstName().equals(personName) && person.getState().equals(stateName))
+				.filter(person -> person.getFirstName().equals(personName) && person.address.getState().equals(stateName))
 				.forEach(person -> System.out.println(person));
 			
 		}
@@ -141,7 +145,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		
 		listToDisplay.values().stream()
 			.map(region -> region.stream()
-				.filter(person -> person.getState().equals(regionName) || person.getCity().equals(regionName)))
+				.filter(person -> person.address.getState().equals(regionName) || person.address.getCity().equals(regionName)))
 				.forEach(person -> person.forEach(personDetails -> System.out.println(personDetails)));
 	}
 	
@@ -153,7 +157,7 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		
 		long countPeople = listToDisplay.values().stream()
 				.map(region -> region.stream()
-					.filter(person -> person.getState().equals(regionName) || person.getCity().equals(regionName)))
+					.filter(person -> person.address.getState().equals(regionName) || person.address.getCity().equals(regionName)))
 					.count();
 					
 		System.out.println("Number of People residing in " + regionName+" are: "+countPeople+"\n");
@@ -188,4 +192,52 @@ public class AddressBookDirectory implements AddressBookDirectoryIF{
 		System.out.println("}");
 		
 	}
+
+	public List<ContactPerson> readContactDetails(IOService ioService) {
+		List<ContactPerson> contactsList = new ArrayList<ContactPerson>();
+		if(ioService.equals(IOService.DB_IO))
+			contactsList = new AddressBookDBService().readContactDetails();
+		return contactsList;	
+	}
+	
+	public Map<Integer,String> readAddressDetails(IOService ioService) {
+		
+		Map<Integer,String> contactsList = new HashMap<Integer,String>();
+		if(ioService.equals(IOService.DB_IO))
+			contactsList = new AddressBookDBService().readAddressDetails();
+		return contactsList;
+	}
+
+	public List<ContactPerson> getEmployeeDetailsBasedOnCity(IOService ioService, String city) {
+		
+		List<ContactPerson> contactsList = new ArrayList<ContactPerson>();
+		if(ioService.equals(IOService.DB_IO))
+			contactsList = new AddressBookDBService().getContactDetailsBasedOnCityUsingStatement(city);
+		return contactsList;
+	}
+
+	public List<ContactPerson> getEmployeeDetailsBasedOnState(IOService ioService, String state) {
+		
+		List<ContactPerson> contactsList = new ArrayList<ContactPerson>();
+		if(ioService.equals(IOService.DB_IO))
+			contactsList = new AddressBookDBService().getContactDetailsBasedOnStateUsingStatement(state);
+		return contactsList;
+	}
+
+	public List<Integer> getCountOfEmployeesBasedOnCity(IOService ioService) {
+		
+		List<Integer> countBasedOnCity = new ArrayList<Integer>();
+		if(ioService.equals(IOService.DB_IO))
+			countBasedOnCity = new AddressBookDBService().getCountOfEmployeesBasedOnCityUsingStatement();
+		return countBasedOnCity;
+	}
+	
+	public List<Integer> getCountOfEmployeesBasedOnState(IOService ioService) {
+		
+		List<Integer> countBasedOnState = new ArrayList<Integer>();
+		if(ioService.equals(IOService.DB_IO))
+			countBasedOnState = new AddressBookDBService().getCountOfEmployeesBasedOnStateUsingStatement();
+		return countBasedOnState;
+	}	
+	
 }
