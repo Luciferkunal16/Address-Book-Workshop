@@ -1,20 +1,17 @@
-import java.util.ArrayList;
+
+import java.io.IOException; 
+import java.util.ArrayList; 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.function.Consumer;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class AddressBookDirectory {
+public class AddressBookDirectory implements AddressBookDirectoryIF{
 	
 	public AddressBook addressBook;
 	Scanner scannerObject = new Scanner(System.in);
 	Map<String,AddressBook> addressBookDirectory = new HashMap<String,AddressBook>();
 	
-
+	@Override
 	public void operationDirectory() {
 
 		boolean moreChanges = true;
@@ -22,7 +19,7 @@ public class AddressBookDirectory {
 
 			System.out.println("\nChoose the operation on the Directory you want to perform");
 			System.out.println(
-					"1.Add an Address Book\n2.Edit Existing Address Book\n3.Search Person By Region\n4.View People By Region\n5.Count People By Region\n6.Display Address book Directory\n7.Exit Address book System");
+					"1.Add an Address Book\n2.Edit Existing Address Book\n3.Search Person By Region\n4.View People By Region\n5.Count People By Region\n6.Display Address book Directory\n7.Read From Json\n8.Exit Address book System");
 
 			switch (scannerObject.nextInt()) {
 			case 1:
@@ -59,13 +56,17 @@ public class AddressBookDirectory {
 				displayDirectoryContents();
 				break;
 			case 7:
+				readDataFromJson();
+				break;
+			case 8:
 				moreChanges = false;
 				System.out.println("Exiting Address Book Directory !");
 			}
 
 		} while (moreChanges);
 	}
-
+	
+	@Override
 	public void addAddressBook() {
 
 		System.out.println("Enter the name of the Address Book you want to add");
@@ -80,7 +81,8 @@ public class AddressBookDirectory {
 		addressBookDirectory.put(bookNameToAdd, addressBook);
 
 	}
-
+	
+	@Override
 	public void editAddressBook() {
 
 		System.out.println("Enter the Name of the Address Book which you want to edit:");
@@ -96,6 +98,7 @@ public class AddressBookDirectory {
 
 	}
 	
+	@Override
 	public void searchByCity() {
 		
 		System.out.println("Enter the name of the City where the Person resides : ");
@@ -106,12 +109,13 @@ public class AddressBookDirectory {
 		for(AddressBook addressBook : addressBookDirectory.values()) {
 			ArrayList<ContactPerson> contactList = addressBook.getContact();
 			contactList.stream()
-				.filter(person -> person.getFirstName().equals(personName) && person.getAddress().getCity().equals(cityName))
+				.filter(person -> person.getFirstName().equals(personName) && person.getCity().equals(cityName))
 				.forEach(person -> System.out.println(person));
 			
 		}		
 	}
 	
+	@Override
 	public void searchByState() {
 		
 		System.out.println("Enter the name of the State where the Person resides : ");
@@ -122,13 +126,14 @@ public class AddressBookDirectory {
 		for(AddressBook addressBook : addressBookDirectory.values()) {
 			ArrayList<ContactPerson> contactList = ((AddressBook) addressBook).getContact();
 			contactList.stream()
-				.filter(person -> person.getFirstName().equals(personName) && person.getAddress().getState().equals(stateName))
+				.filter(person -> person.getFirstName().equals(personName) && person.getState().equals(stateName))
 				.forEach(person -> System.out.println(person));
 			
 		}
 
 	}
 	
+	@Override
 	public void displayPeopleByRegion(HashMap<String, ArrayList<ContactPerson>> listToDisplay) {
 
 		System.out.println("Enter the name of the region :");
@@ -136,10 +141,11 @@ public class AddressBookDirectory {
 		
 		listToDisplay.values().stream()
 			.map(region -> region.stream()
-				.filter(person -> person.getAddress().getState().equals(regionName) || person.getAddress().getCity().equals(regionName)))
+				.filter(person -> person.getState().equals(regionName) || person.getCity().equals(regionName)))
 				.forEach(person -> person.forEach(personDetails -> System.out.println(personDetails)));
 	}
 	
+	@Override
 	public void countPeopleByRegion(HashMap<String, ArrayList<ContactPerson>> listToDisplay) {
 
 		System.out.println("Enter the name of the region :");
@@ -147,13 +153,14 @@ public class AddressBookDirectory {
 		
 		long countPeople = listToDisplay.values().stream()
 				.map(region -> region.stream()
-					.filter(person -> person.getAddress().getState().equals(regionName) || person.getAddress().getCity().equals(regionName)))
+					.filter(person -> person.getState().equals(regionName) || person.getCity().equals(regionName)))
 					.count();
 					
 		System.out.println("Number of People residing in " + regionName+" are: "+countPeople+"\n");
 		
 	}
 	
+	@Override
 	public void displayDirectoryContents() {
 
 		System.out.println("----- Contents of the Address Book Directory-----");
@@ -162,5 +169,23 @@ public class AddressBookDirectory {
 				System.out.println(eachBookName);
 		}
 		System.out.println("-----------------------------------------");
+	}
+	
+	@Override
+	public void readDataFromJson() {
+		
+		System.out.println("{");
+		for(AddressBook addressBook : addressBookDirectory.values()) {
+			System.out.println(addressBook.getAddressBookName()+": [\n");
+			try {
+				addressBook.readDataFromJson();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println("]\n");
+			
+		}
+		System.out.println("}");
+		
 	}
 }
