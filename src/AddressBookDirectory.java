@@ -279,6 +279,28 @@ public class AddressBookDirectory {
 			this.contactsList = addressBookDbService.getContactsBasedOnStartDateUsingPreparedStatement(startDate, endDate);
 		return this.contactsList;
 	}
+public void addContacts(List<ContactPerson> contactsListToBeAdded) {
+	        Map<Integer,Boolean> additionStatus = new HashMap<Integer, Boolean>();
+	        contactsListToBeAdded.forEach(contact -> {
+	            Runnable task = () -> {
+	                additionStatus.put(contact.hashCode(), false);
+	                System.out.println("Contact being added:(threads) "+Thread.currentThread().getName());
+	                this.addContactToUpdatedDatabase(contact.getContactid(),contact.getFirstName(),contact.getLastName(),contact.getPhoneNumber(),contact.getEmail(),contact.getAddress().getAddressId(),contact.getDateAdded(), contact.getAddressBookId());
+	                additionStatus.put(contact.hashCode(), true);
+	                System.out.println("Contact added: (threads)"+Thread.currentThread().getName());
+	            };
+	            Thread thread = new Thread(task,contact.getFirstName());
+	            thread.start();
+	        });
+	        while(additionStatus.containsValue(false)) {
+	            try {
+	                Thread.sleep(10);
+	            }catch(InterruptedException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	        System.out.println(contactsListToBeAdded);
+	    }
 	
 	
 }
