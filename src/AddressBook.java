@@ -23,7 +23,7 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
-public class AddressBook implements AddressBookIF {
+public class AddressBook {
 
 	Scanner scannerObject = new Scanner(System.in);
 	public Map<String, ContactPerson> contactList = new HashMap<String,ContactPerson>();
@@ -67,7 +67,7 @@ public class AddressBook implements AddressBookIF {
 		this.addressBookType = addressBookType;
 	}
 
-	@Override
+
 	public void operation() {
 
 		boolean moreChanges = true;
@@ -151,8 +151,7 @@ public class AddressBook implements AddressBookIF {
 
 		} while (moreChanges);
 	}
-	
-	@Override
+
 	public void createContactPerson(Scanner scannerObject) {
 		
 		ContactPerson person = new ContactPerson();
@@ -203,14 +202,13 @@ public class AddressBook implements AddressBookIF {
 		}
 	}
 
-	@Override
 	public void addContact(String firstName, ContactPerson person) {
 		
 			contactList.put(firstName.toLowerCase(), person);
 
 	}
 	
-	@Override	
+	
 	public void addPersonToCity(ContactPerson contact) {
 		if (personByCity.containsKey(contact.getAddress().getCity())) {
 			personByCity.get(contact.getAddress().getCity()).add(contact);
@@ -222,7 +220,7 @@ public class AddressBook implements AddressBookIF {
 		}
 	}
 	
-	@Override
+	
 	public void addPersonToState(ContactPerson contact) {
 		if (personByState.containsKey(contact.getAddress().getState())) {			
 			personByState.get(contact.getAddress().getState()).add(contact);
@@ -234,7 +232,7 @@ public class AddressBook implements AddressBookIF {
 		}
 	}
 	
-	@Override
+
 	public void editPerson() {
 		
 		ContactPerson person = new ContactPerson();
@@ -288,7 +286,7 @@ public class AddressBook implements AddressBookIF {
 		
 	}
 
-	@Override
+
 	public void deletePerson() {
 
 		System.out.println("Enter the first name of the person to be deleted");
@@ -303,7 +301,6 @@ public class AddressBook implements AddressBookIF {
 		
 	}
 
-	@Override
 	public void displayContents() {
 		
 		System.out.println("----- Contents of the Address Book "+this.getAddressBookName()+" -----");
@@ -315,7 +312,7 @@ public class AddressBook implements AddressBookIF {
 
 	}
 	
-	@Override
+
 	public void printSortedList(List<ContactPerson> sortedContactList) {
 		System.out.println("------ Sorted Address Book "+this.getAddressBookName()+" ------");
 		Iterator iterator = sortedContactList.iterator();
@@ -326,7 +323,7 @@ public class AddressBook implements AddressBookIF {
 		System.out.println("-----------------------------------------");
 	}
 	
-	@Override
+
 	public void sortAddressBook(int sortingChoice) {
 		List<ContactPerson> sortedContactList;
 		
@@ -358,9 +355,7 @@ public class AddressBook implements AddressBookIF {
 		}
 				
 	}
-	
-	@Override
-	public void writeToAddressBookFile(IOService ioService) {
+		public void writeToAddressBookFile(IOService ioService) {
 		if(ioService.equals(IOService.CONSOLE_IO))
 			displayContents();
 		
@@ -388,7 +383,7 @@ public class AddressBook implements AddressBookIF {
 		return 0;
 	}
 	
-	@Override
+
 	public List<String> readDataFromFile(IOService fileIo) {
 		
 		List<String> employeePayrollFromFile = new ArrayList<String>();
@@ -402,7 +397,7 @@ public class AddressBook implements AddressBookIF {
 		return employeePayrollFromFile;
 	}
 	
-	@Override
+
 	public void writeDataToCSV() throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
 		
 		String fileName = "./"+this.getAddressBookName()+"Contacts.csv";
@@ -420,7 +415,7 @@ public class AddressBook implements AddressBookIF {
         }
     }
 	
-	@Override
+
     public <CsvValidationException extends Throwable> void readDataFromCSV() throws IOException, CsvValidationException {
     	
     	String fileName = "./"+this.getAddressBookName()+"Contacts.csv";
@@ -441,7 +436,7 @@ public class AddressBook implements AddressBookIF {
         }
     }
     
-	@Override
+
 	public void writeDataToJson() throws IOException {
 		
 		String fileName = "./" + this.getAddressBookName() + "Contacts.json";
@@ -454,7 +449,7 @@ public class AddressBook implements AddressBookIF {
 
 	}
 
-	@Override
+
     public void readDataFromJson() throws IOException {
     	
         ArrayList<ContactPerson> contactList;
